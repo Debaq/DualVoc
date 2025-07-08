@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DualVOC - Otoscopio Educativo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .stream-section {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stream-container {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .stream-img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .control-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .control-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-gallery {
+            background-color: #27ae60;
+        }
+
+        .btn-gallery:hover {
+            background-color: #229954;
+        }
+
+        .btn-config {
+            background-color: #e74c3c;
+        }
+
+        .btn-config:hover {
+            background-color: #c0392b;
+        }
+
+        .icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .status {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .status-item {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .status-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-value {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .loading {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 1rem;
+            border-radius: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>DualVOC - Otoscopio Educativo Digital</h1>
+        <p>Visualización y captura de imágenes médicas para educación</p>
+    </div>
+
+    <div class="container">
+        <div class="status">
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-label">Estado</div>
+                    <div class="status-value" id="connection-status">Conectado</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Calidad</div>
+                    <div class="status-value">SVGA (800x600)</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Última imagen</div>
+                    <div class="status-value" id="last-photo">--</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stream-section">
+            <h2>Vista del Otoscopio</h2>
+            <div class="stream-container">
+                <img src="/stream" alt="Vista del otoscopio en tiempo real" class="stream-img" id="stream">
+                <div class="loading" id="loading">Cargando...</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-card">
+                <span class="icon">🔬</span>
+                <h3>Galería Médica</h3>
+                <p>Ver todas las imágenes capturadas</p>
+                <a href="/gallery" class="btn btn-gallery">Ver Galería</a>
+            </div>
+
+            <div class="control-card">
+                <span class="icon">⚙️</span>
+                <h3>Configuración</h3>
+                <p>Configurar WiFi y parámetros</p>
+                <a href="/config" class="btn btn-config">Configurar</a>
+            </div>
+
+            <div class="control-card">
+                <span class="icon">🔄</span>
+                <h3>Actualizar Vista</h3>
+                <p>Recargar la visualización</p>
+                <button class="btn" onclick="refreshStream()">Actualizar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function refreshStream() {
+            const stream = document.getElementById('stream');
+            const loading = document.getElementById('loading');
+
+            loading.style.display = 'block';
+            stream.style.opacity = '0.5';
+
+            // Forzar recarga del stream
+            const timestamp = new Date().getTime();
+            stream.src = '/stream?' + timestamp;
+
+            stream.onload = function() {
+                loading.style.display = 'none';
+                stream.style.opacity = '1';
+            };
+        }
+
+        function updateStatus() {
+            fetch('/status')
+                .then(response => response.json())
+                .then(data => {
+                    if(data.lastPhoto) {
+                        document.getElementById('last-photo').textContent = data.lastPhoto;
+                    }
+                })
+                .catch(error => {
+                    console.log('Error obteniendo estado:', error);
+                });
+        }
+
+        // Actualizar estado cada 30 segundos
+        setInterval(updateStatus, 30000);
+
+        // Manejar errores de carga del stream
+        document.getElementById('stream').onerror = function() {
+            this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkVycm9yIGNhcmdhbmRvIHZpc3VhbGl6YWNpw7NuPC90ZXh0Pjwvc3ZnPg==';
+        };
+    </script>
+</body>
+</html>
